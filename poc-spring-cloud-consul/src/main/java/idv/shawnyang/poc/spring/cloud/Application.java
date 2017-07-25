@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.consul.serviceregistry.ConsulRegistration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,22 +44,29 @@ public class Application {
 	@Autowired
 	private ReaderProperties readerProperties;
 
-	public List<ServiceInstance> serviceUrl() {
-		return discoveryClient.getInstances("poc-spring-cloud-consul");
+	@Autowired
+	private ConsulRegistration consulRegistration;
+
+	@RequestMapping("/service/consul/print")
+	public String serviceConsulPrint() {
+		List<ServiceInstance> serviceInstances = discoveryClient.getInstances("consul");
+		String message = gson.toJson(serviceInstances);
+		log.info(message);
+		return message;
 	}
 
-	@RequestMapping("/service/print/")
-	public String printService() {
-		List<ServiceInstance> serviceInstances = serviceUrl();
+	@RequestMapping("/service/me/print")
+	public String serviceMePrint() {
+		List<ServiceInstance> serviceInstances = discoveryClient.getInstances(consulRegistration.getServiceId());
 		String message = gson.toJson(serviceInstances);
-		log.info("message");
+		log.info(message);
 		return message;
 	}
 
 	@RequestMapping("/reader/print/")
 	public String printReader() {
-		String message = "ReaderPower=" + readerProperties.getPower();
-		log.info("message");
+		String message = gson.toJson(readerProperties);
+		log.info(message);
 		return message;
 	}
 

@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.bus.event.CommandStopReader;
-import org.springframework.cloud.consul.discovery.TtlScheduler;
 import org.springframework.cloud.consul.serviceregistry.ConsulRegistration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -30,9 +29,6 @@ public class Reader {
 
 	@Autowired
 	private ConsulRegistration consulRegistration;
-
-	@Autowired
-	private TtlScheduler ttlScheduler;
 
 	@PostConstruct
 	public void postConstruct() {
@@ -71,7 +67,7 @@ public class Reader {
 	 * If PLC is not ready, for example, not connected, not power on, disconnect
 	 * due to some error, etc, the component will retry until it get back.
 	 */
-	@Scheduled(initialDelay = 10000, fixedDelay = 10000)
+	@Scheduled(initialDelay = 10000, fixedDelay = 100000)
 	void scheduledRecover() {
 		try {
 			log.info("BEGIN");
@@ -82,6 +78,12 @@ public class Reader {
 
 			if (!checking) {
 				this.startChecking();
+			}
+
+			if (running) {
+				consulClient.agentCheckPass("service:" + Reader.class.getName());
+			} else {
+				consulClient.agentCheckFail("service:" + Reader.class.getName());
 			}
 
 			log.info("END");
@@ -130,12 +132,10 @@ public class Reader {
 		newCheck.setTtl("30s");
 		newCheck.setServiceId(consulRegistration.getServiceId());
 		consulClient.agentCheckRegister(newCheck);
-		ttlScheduler.add(Reader.class.getName());
 		checking = true;
 	}
 
 	private synchronized void stopChecking() {
-		ttlScheduler.remove(Reader.class.getName());
 		consulClient.agentCheckDeregister(Reader.class.getName());
 		checking = false;
 	}
