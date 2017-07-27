@@ -42,9 +42,6 @@ public class Application {
 	private DiscoveryClient discoveryClient;
 
 	@Autowired
-	private ReaderProperties readerProperties;
-
-	@Autowired
 	private ConsulRegistration consulRegistration;
 
 	@RequestMapping("/service/consul/print")
@@ -59,13 +56,6 @@ public class Application {
 	public String serviceMePrint() {
 		List<ServiceInstance> serviceInstances = discoveryClient.getInstances(consulRegistration.getServiceId());
 		String message = gson.toJson(serviceInstances);
-		log.info(message);
-		return message;
-	}
-
-	@RequestMapping("/reader/print/")
-	public String printReader() {
-		String message = gson.toJson(readerProperties);
 		log.info(message);
 		return message;
 	}

@@ -13,22 +13,32 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.agent.model.NewCheck;
+import com.google.gson.Gson;
 
 @Component
+@RestController
 public class Reader {
 
 	private static final Logger log = LoggerFactory.getLogger(Reader.class);
-	private boolean running = false;
-	private boolean checking = false;
+	private boolean started = false;
+	private boolean checkingStarted = false;
 
 	@Autowired
 	private ConsulClient consulClient;
 
 	@Autowired
 	private ConsulRegistration consulRegistration;
+
+	@Autowired
+	private ReaderProperties readerProperties;
+
+	@Autowired
+	private Gson gson;
 
 	@PostConstruct
 	public void postConstruct() {
@@ -67,23 +77,33 @@ public class Reader {
 	 * If PLC is not ready, for example, not connected, not power on, disconnect
 	 * due to some error, etc, the component will retry until it get back.
 	 */
-	@Scheduled(initialDelay = 10000, fixedDelay = 100000)
-	void scheduledRecover() {
+	@Scheduled(initialDelay = 10000, fixedDelay = 10000)
+	void scheduledManage() {
 		try {
 			log.info("BEGIN");
 
-			if (!running) {
-				this.startRunning();
+			if (started != readerProperties.isStarted()) {
+				if (readerProperties.isStarted()) {
+					this.start();
+				} else {
+					this.stop();
+				}
 			}
 
-			if (!checking) {
-				this.startChecking();
+			if (checkingStarted != readerProperties.isCheckingStarted()) {
+				if (readerProperties.isCheckingStarted()) {
+					this.startChecking();
+				} else {
+					this.stopChecking();
+				}
 			}
 
-			if (running) {
-				consulClient.agentCheckPass("service:" + Reader.class.getName());
-			} else {
-				consulClient.agentCheckFail("service:" + Reader.class.getName());
+			if (checkingStarted) {
+				if (started) {
+					consulClient.agentCheckPass("service:" + Reader.class.getName());
+				} else {
+					consulClient.agentCheckFail("service:" + Reader.class.getName());
+				}
 			}
 
 			log.info("END");
@@ -96,32 +116,39 @@ public class Reader {
 	void preDestroy() {
 		try {
 			log.info("BEGIN");
-			if (checking) {
+			if (checkingStarted) {
 				stopChecking();
 			}
-			if (running) {
-				stopRunning();
+			if (started) {
+				stop();
 			}
 			log.info("END");
 		} catch (Throwable e) {
 			log.error(e.getMessage(), e);
 		}
+	}
+
+	@RequestMapping("/reader/print/")
+	public String printReader() {
+		String message = gson.toJson(readerProperties);
+		log.info(message);
+		return message;
 	}
 
 	@EventListener(classes = CommandStopReader.class)
 	public void stopReader(CommandStopReader event) {
 		try {
 			log.info("BEGIN");
-			stopRunning();
+			stop();
 			log.info("END");
 		} catch (Throwable e) {
 			log.error(e.getMessage(), e);
 		}
 	}
 
-	private synchronized void startRunning() {
+	private synchronized void start() {
 		log.info(this.getClass().getName() + " starting");
-		running = true;
+		started = true;
 		log.info(this.getClass().getName() + " started");
 	}
 
@@ -132,17 +159,17 @@ public class Reader {
 		newCheck.setTtl("30s");
 		newCheck.setServiceId(consulRegistration.getServiceId());
 		consulClient.agentCheckRegister(newCheck);
-		checking = true;
+		checkingStarted = true;
 	}
 
 	private synchronized void stopChecking() {
 		consulClient.agentCheckDeregister(Reader.class.getName());
-		checking = false;
+		checkingStarted = false;
 	}
 
-	private synchronized void stopRunning() {
+	private synchronized void stop() {
 		log.info(this.getClass().getName() + " stopping");
-		running = false;
+		started = false;
 		log.info(this.getClass().getName() + " stopped");
 	}
 
