@@ -32,7 +32,7 @@ public class HealthService {
 
 	private ConsulClient consul;
 	private String dataCenter;
-	private AtomicReference<Long> lastIndex = new AtomicReference<>();
+	private AtomicReference<Long> lastIndex = new AtomicReference<>();;
 
 	public HealthService(String dataCenter, ConsulClient consul) {
 		super();
@@ -62,7 +62,7 @@ public class HealthService {
 			index = lastIndex;
 		}
 		Response<List<Check>> watch = consul.getHealthChecksState(CheckStatus.CRITICAL,
-				new QueryParams(dataCenter, -1, index));
+				new QueryParams(dataCenter, 5, index));
 		return readChecks(watch);
 	}
 
