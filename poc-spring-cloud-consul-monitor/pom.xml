@@ -9,7 +9,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../../poc-spring-cloud</relativePath>
 	</parent>
-	<artifactId>poc-spring-cloud-consul</artifactId>
+	<artifactId>poc-spring-cloud-consul-monitor</artifactId>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -84,6 +84,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
 
 </project>

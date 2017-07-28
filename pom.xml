@@ -17,7 +17,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Dalston.SR1</spring-cloud.version>
-		<nexusproxy>http://10.120.137.129:18081/nexus</nexusproxy>
+		<nexusproxy>http://10.120.137.45:18081/nexus</nexusproxy>
 		<repobasepath>content/repositories</repobasepath>
 	</properties>
 
@@ -27,6 +27,21 @@
 			<url>${nexusproxy}/${repobasepath}/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<profiles>
+		<profile>
+			<id>repo-official</id>
+			<activation>
+				<property>
+					<name>repo</name>
+					<value>official</value>
+				</property>
+			</activation>
+			<properties>
+				<nexusproxy>http://10.120.137.129:18081/nexus</nexusproxy>
+			</properties>
+		</profile>
+	</profiles>
 
 	<dependencyManagement>
 		<dependencies>
@@ -39,6 +54,8 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+
 	<build>
 		<!-- Turn on filtering by default for application properties -->
 		<resources>
@@ -70,10 +87,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<classifier>exec</classifier>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 	<modules>
 		<module>poc-spring-cloud-consul</module>
+		<module>poc-spring-cloud-consul-monitor</module>
 	</modules>
 </project>

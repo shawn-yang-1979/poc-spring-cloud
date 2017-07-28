@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- version: 1.1 copyright(c) - www.delta.com.tw Log4j 2: http://logging.apache.org/log4j/2.x/manual/index.html 
+	Configuration: http://logging.apache.org/log4j/2.x/manual/configuration.html 
+	Appenders: http://logging.apache.org/log4j/2.x/manual/appenders.html Layouts: 
+	http://logging.apache.org/log4j/2.x/manual/layouts.html -->
+<Configuration monitorInterval="5" status="info" strict="true">
+	<Properties>
+		<Property name="log-path">./log</Property>
+	</Properties>
+
+	<Appenders>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="[%d][%-5p][%C.%M:%L]- %m%n" />
+		</Console>
+
+		<RollingFile name="application" fileName="${log-path}/application.log"
+			filePattern="${log-path}/application-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout pattern="[%d][%-5p][%C.%M:%L]- %m%n" />
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10">
+				<Delete basePath="${log-path}">
+					<IfFileName glob="application*.log" />
+					<IfLastModified age="10d" />
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>
+	</Appenders>
+
+	<Loggers>
+		<Root level="info">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="application" />
+		</Root>
+	</Loggers>
+</Configuration>
