@@ -12,6 +12,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationContext;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.ecwid.consul.v1.ConsulClient;
@@ -36,6 +39,9 @@ public class Application {
 	@Autowired
 	private ConsulClient consul;
 
+	@Autowired
+	private MailSender mailSender;
+
 	private Map<String, HealthService> healthServiceByDataCenter = new HashMap<>();
 
 	@Scheduled(initialDelay = 10000, fixedDelay = 10000)
@@ -53,6 +59,16 @@ public class Application {
 					log.info(dataCenter);
 					log.info(check.toString());
 					log.info("Send mail to system admin");
+					SimpleMailMessage message = new SimpleMailMessage();
+					message.setFrom("SERVICE.TBSVRADMIN@deltaww.com");
+					message.setSubject(dataCenter + " health status: " + check.getStatus());
+					message.setTo("shawn.sh.yang@deltaww.com");
+					message.setText(check.toString());
+					try {
+						this.mailSender.send(message);
+					} catch (MailException e) {
+						log.error(e.getMessage(), e);
+					}
 				}
 			} catch (Throwable t) {
 				log.error(t.getMessage(), t);
