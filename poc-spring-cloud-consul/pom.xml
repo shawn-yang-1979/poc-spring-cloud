@@ -4,10 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>idv.shawnyang.poc.spring.cloud</groupId>
+		<groupId>idv.shawnyang</groupId>
 		<artifactId>poc-spring-cloud</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../../poc-spring-cloud</relativePath>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>poc-spring-cloud-consul</artifactId>
 	<packaging>jar</packaging>

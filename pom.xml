@@ -5,10 +5,10 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.4.RELEASE</version>
+		<version>1.5.9.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>idv.shawnyang.poc.spring.cloud</groupId>
+	<groupId>idv.shawnyang</groupId>
 	<artifactId>poc-spring-cloud</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -16,45 +16,43 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<spring-cloud.version>Dalston.SR1</spring-cloud.version>
+		<project.scm.id>github</project.scm.id>
 		<nexusproxy>http://10.120.137.45:18081/nexus</nexusproxy>
 		<repobasepath>content/repositories</repobasepath>
 	</properties>
+	<scm>
+		<developerConnection>scm:git:https://github.com/shawn-yang-1979/poc-spring-cloud.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+	<repositories>
+		<repository>
+			<id>sonatype-nexus-public</id>
+			<url>${nexusproxy}/content/groups/public</url>
+		</repository>
+	</repositories>
 
 	<distributionManagement>
+		<repository>
+			<id>sonatype-nexus-release</id>
+			<url>${nexusproxy}/${repobasepath}/releases</url>
+		</repository>
 		<snapshotRepository>
 			<id>sonatype-nexus-snapshot</id>
 			<url>${nexusproxy}/${repobasepath}/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
-	<profiles>
-		<profile>
-			<id>repo-official</id>
-			<activation>
-				<property>
-					<name>repo</name>
-					<value>official</value>
-				</property>
-			</activation>
-			<properties>
-				<nexusproxy>http://10.120.137.129:18081/nexus</nexusproxy>
-			</properties>
-		</profile>
-	</profiles>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
+				<version>Edgware.SR1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 
 	<build>
 		<!-- Turn on filtering by default for application properties -->
@@ -87,8 +85,16 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<!-- Have to use 2.5.3 otherwise you will get error message like: "can 
+					not find mvn.bat". -->
+				<version>2.5.3</version>
 				<configuration>
-					<classifier>exec</classifier>
+					<tagNameFormat>v@{project.version}</tagNameFormat>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
 			</plugin>
 		</plugins>
