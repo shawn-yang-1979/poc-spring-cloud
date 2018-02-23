@@ -101,5 +101,6 @@
 	<modules>
 		<module>poc-spring-cloud-consul</module>
 		<module>poc-spring-cloud-consul-monitor</module>
+		<module>poc-spring-cloud-task</module>
 	</modules>
 </project>
