@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+
+Vagrant.configure("2") do |config|
+  config.vm.define "spring-cloud-dataflow-server" do |server|
+    server.vm.box = "bento/ubuntu-14.04"
+    server.vm.box_version = "2.3.8"
+    # virtual backend
+	server.vm.network "private_network", ip: "192.168.50.12"
+    server.vm.provider "virtualbox" do |virtualbox|
+      virtualbox.memory = 2048
+      virtualbox.cpus = 2
+      virtualbox.gui = true
+    end
+    server.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "ansible_local/ansible-init.yml"
+    end
+    server.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "ansible_local/spring-cloud-dataflow-server.yml"
+    end        
+  end  
+end

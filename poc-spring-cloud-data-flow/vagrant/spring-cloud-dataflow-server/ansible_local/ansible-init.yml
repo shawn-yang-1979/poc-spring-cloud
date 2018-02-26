@@ -1,0 +1,6 @@
+---
+- hosts: all
+  
+  tasks:
+  - name: install ansible role  
+    shell: "ansible-galaxy install --force ansiblebit.oracle-java"
