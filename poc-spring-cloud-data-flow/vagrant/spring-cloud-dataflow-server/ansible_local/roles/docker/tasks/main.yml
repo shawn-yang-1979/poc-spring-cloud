@@ -1,0 +1,43 @@
+---
+- name: register uname -r result for update linux-image-extra
+  shell: uname -r
+  register: uname_r_result
+
+- name: make sure recommended extra packages are installed
+  apt: name={{item}} state=latest
+  with_items:
+    - curl
+    - linux-image-extra-{{ uname_r_result.stdout }}
+    - linux-image-extra-virtual
+    - apt-transport-https
+    - software-properties-common
+    - ca-certificates
+
+- name: make sure docker key is present
+  apt_key:
+    id: 58118E89F3A912897C070ADBF76221572C52609D
+    url: https://yum.dockerproject.org/gpg
+    state: present        
+
+- name: register lsb_release -cs result for add docker repository for ubuntu
+  shell: lsb_release -cs
+  register: lsb_release_cs_result
+
+- name: make sure docker repository is added
+  apt_repository:
+    repo: 'deb https://apt.dockerproject.org/repo/ ubuntu-{{ lsb_release_cs_result.stdout }} main'
+    state: present    
+
+- name: make sure docker-engine is installed
+  apt: name={{item}} state=latest update_cache=yes
+  with_items:
+    - docker-engine
+
+- name: make sure docker-py is installed to control docker.
+  pip:
+    name: docker-py
+    
+- name: verify installation via hello world
+  docker_container:
+    name: hello-world
+    image: hello-world

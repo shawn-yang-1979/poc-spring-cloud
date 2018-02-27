@@ -3,5 +3,11 @@
   become: yes
   
   roles:
-  - role: ansiblebit.oracle-java
+  - role: kafka
   - role: spring-cloud-dataflow-server
+  - role: init-d-script
+    vars:
+      init_d_script_name: "spring-cloud-dataflow-server"
+      description: "spring-cloud-dataflow-server"
+      command: "{{ spring_cloud_dataflow_server_home }}/startup.sh"
+      username: "root"

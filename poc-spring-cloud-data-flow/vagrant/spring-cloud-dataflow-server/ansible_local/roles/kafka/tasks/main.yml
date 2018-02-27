@@ -1,0 +1,35 @@
+---
+- name: create directory
+  file:
+    path: "{{ kafka_home }}"
+    state: directory
+
+- name: Download the latest version and unarchive it.
+  unarchive:
+    src: "{{ kafka_download_url }}"
+    dest: "{{ kafka_home }}"
+    remote_src: yes
+    
+- name: find kafka
+  find:
+    paths: "{{ kafka_home }}"
+    file_type: "directory"
+    patterns: "kafka*"
+    age: "1m"
+  register: find_result
+
+- name: should be 1 kafka folder there
+  assert:
+    that:
+    - find_result.matched == 1
+    msg: can not find the downloaded kafka  
+    
+- name: set kafka
+  set_fact:
+    kafka_version: "{{ find_result.files[0].path | basename }}"   
+    
+- name: make a symlink to the specific version
+  file:
+    src: "{{ kafka_home }}/{{ kafka_version }}"
+    dest: "{{ kafka_home }}/default"
+    state: link

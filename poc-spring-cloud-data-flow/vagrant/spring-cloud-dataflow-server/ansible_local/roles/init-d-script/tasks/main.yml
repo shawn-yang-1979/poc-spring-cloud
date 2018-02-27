@@ -1,0 +1,20 @@
+---   
+- name: "make sure {{ init_d_script_name }} is stopped"    
+  shell: "service {{ init_d_script_name }} stop"
+  ignore_errors: yes        
+
+- name: "make sure {{ init_d_script_name }} is uninstalled"    
+  shell: "printf 'yes\n' | sudo service {{ init_d_script_name }} uninstall"
+  ignore_errors: yes  
+  
+- name: copy script to remote
+  template: 
+    src: service.j2
+    dest: "/etc/init.d/{{ init_d_script_name }}"
+    mode: 0755
+    
+- name: "make sure {{ init_d_script_name }} is enabled"    
+  shell: "update-rc.d {{ init_d_script_name }} defaults"      
+    
+- name: "make sure {{ init_d_script_name }} is up and running"
+  shell: "service {{ init_d_script_name }} start"

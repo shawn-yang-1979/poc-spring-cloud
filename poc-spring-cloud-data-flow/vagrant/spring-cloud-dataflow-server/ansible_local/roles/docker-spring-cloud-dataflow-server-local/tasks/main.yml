@@ -1,0 +1,15 @@
+---
+- name: create a directory if it doesn't exist
+  file:
+    path: "{{ spring_cloud_dataflow_server_home }}"
+    state: directory
+    owner: 200
+    recurse: yes
+
+- name: run docker container
+  docker_container:
+    name: spring-cloud-dataflow-server-local
+    image: springcloud/spring-cloud-dataflow-server-local
+    published_ports: 9393:9393
+    restart_policy: unless-stopped
+    state: started

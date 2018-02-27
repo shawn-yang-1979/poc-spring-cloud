@@ -1,11 +1,23 @@
 ---
 - name: create directory
   file:
-    path: /solution/spring-cloud-dataflow-server/
+    path: "{{ spring_cloud_dataflow_server_home }}"
     state: directory
 
-- name: download 
+- name: download
   get_url:
-    url: "{{ download_url }}"
-    dest: /solution/spring-cloud-dataflow-server/spring-cloud-dataflow-server-local.jar
-    mode: 0777
+    url: "{{ spring_cloud_dataflow_server_download_url }}"
+    dest: "{{ spring_cloud_dataflow_server_home }}"
+    mode: "0755"
+  register: get_url_result
+  
+- name: set jar
+  set_fact:
+    jar_name: "{{ get_url_result.dest | basename }}"
+    
+- name: create a script for starting server 
+  template:
+    src: startup.sh.j2
+    dest: "{{ spring_cloud_dataflow_server_home }}/startup.sh"
+    backup: yes
+    mode: 0755
