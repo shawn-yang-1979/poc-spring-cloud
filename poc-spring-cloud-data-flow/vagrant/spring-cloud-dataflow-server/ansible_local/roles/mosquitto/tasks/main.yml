@@ -1,0 +1,15 @@
+---  
+- name: make sure mosquitto are installed
+  apt: 
+    name: mosquitto 
+    state: latest
+  
+- name: make sure mosquitto is enabled
+  service:
+    name: mosquitto
+    enabled: yes
+    
+- name: make sure mosquitto is up and running
+  service:
+    name: mosquitto
+    state: started        

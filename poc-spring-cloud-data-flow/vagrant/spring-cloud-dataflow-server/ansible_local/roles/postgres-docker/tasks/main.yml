@@ -1,0 +1,9 @@
+---
+- name: run docker container
+  docker_container:
+    name: "{{ postgres_docker_container_name }}"
+    image: postgres
+    env:
+        POSTGRES_PASSWORD: {{ postgres_password }}
+    restart_policy: unless-stopped
+    state: started

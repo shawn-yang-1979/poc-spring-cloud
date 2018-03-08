@@ -11,7 +11,7 @@
   template: 
     src: service.j2
     dest: "/etc/init.d/{{ init_d_script_name }}"
-    mode: 0755
+    mode: 0777
     
 - name: "make sure {{ init_d_script_name }} is enabled"    
   shell: "update-rc.d {{ init_d_script_name }} defaults"      

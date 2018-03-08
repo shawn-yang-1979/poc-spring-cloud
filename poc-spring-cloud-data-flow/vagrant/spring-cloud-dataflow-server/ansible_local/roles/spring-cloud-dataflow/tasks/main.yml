@@ -1,0 +1,48 @@
+---
+- name: create directory
+  file:
+    path: "{{ spring_cloud_dataflow_home }}"
+    mode: "0777"
+    state: directory
+    
+- name: create directory
+  file:
+    path: "{{ spring_cloud_dataflow_home }}/{{ spring_cloud_dataflow_working_directory }}"
+    mode: "0777"
+    state: directory
+
+- name: download server
+  get_url:
+    url: "{{ spring_cloud_dataflow_server_download_url }}"
+    dest: "{{ spring_cloud_dataflow_home }}"
+    mode: "0777"
+  register: get_url_server_result
+  
+- name: set server jar
+  set_fact:
+    server_jar_name: "{{ get_url_server_result.dest | basename }}"
+    
+- name: create a script for starting server 
+  template:
+    src: server-startup.sh.j2
+    dest: "{{ spring_cloud_dataflow_home }}/server-startup.sh"
+    backup: yes
+    mode: 0777
+    
+- name: download shell
+  get_url:
+    url: "{{ spring_cloud_dataflow_shell_download_url }}"
+    dest: "{{ spring_cloud_dataflow_home }}"
+    mode: 0777
+  register: get_url_shell_result
+  
+- name: set shell jar
+  set_fact:
+    shell_jar_name: "{{ get_url_shell_result.dest | basename }}"
+    
+- name: create a script for starting shell 
+  template:
+    src: shell-startup.sh.j2
+    dest: "{{ spring_cloud_dataflow_home }}/shell-startup.sh"
+    backup: yes
+    mode: 0777

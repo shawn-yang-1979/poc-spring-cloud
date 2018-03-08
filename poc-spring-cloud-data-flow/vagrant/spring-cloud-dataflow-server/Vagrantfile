@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
       ansible.playbook = "ansible_local/ansible-init.yml"
     end
     server.vm.provision "ansible_local" do |ansible|
-      ansible.playbook = "ansible_local/spring-cloud-dataflow-server.yml"
+      ansible.playbook = "ansible_local/spring-cloud-dataflow.yml"
     end        
   end  
 end

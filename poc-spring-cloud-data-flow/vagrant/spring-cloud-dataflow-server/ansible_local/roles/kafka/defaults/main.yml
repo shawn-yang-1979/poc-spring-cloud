@@ -1,3 +1,5 @@
 ---
 kafka_download_url: http://apache.stu.edu.tw/kafka/1.0.0/kafka_2.11-1.0.0.tgz
+# http://apache.stu.edu.tw/kafka/1.0.0/kafka_2.11-1.0.0.tgz
+# http://ftp.mirror.tw/pub/apache/kafka/1.0.0/kafka_2.11-1.0.0.tgz
 kafka_home: /solution/kafka

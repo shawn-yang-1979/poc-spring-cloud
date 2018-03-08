@@ -1,0 +1,9 @@
+cd `dirname $0`;
+java -jar {{ server_jar_name }} \
+--logging.path=log \
+--maven.localRepository=maven-local-repository \
+--spring.cloud.deployer.local.workingDirectoriesRoot={{ spring_cloud_dataflow_working_directory }}
+--spring.datasource.url=jdbc:postgresql:postgres \
+--spring.datasource.username=postgres \
+--spring.datasource.password={{ postgres_password }} \
+--spring.datasource.driver-class-name=org.postgresql.Driver

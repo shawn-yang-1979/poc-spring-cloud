@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: yes
+  
+  roles:
+  - role: spring-cloud-dataflow
+  - role: init-d-script
+    vars:
+      init_d_script_name: "zookeeper-server"
+      description: "zookeeper-server"
+      command: "{{ kafka_home }}/default/zookeeper-server-startup.sh"
+      username: "root"
+  - role: init-d-script
+    vars:
+      init_d_script_name: "kafka-server"
+      description: "kafka-server"
+      command: "{{ kafka_home }}/default/kafka-server-startup.sh"
+      username: "root"
+  - role: init-d-script
+    vars:
+      init_d_script_name: "spring-cloud-dataflow-server"
+      description: "spring-cloud-dataflow-server"
+      command: "{{ spring_cloud_dataflow_home }}/server-startup.sh"
+      username: "root"
+  - role: spring-cloud-dataflow-init

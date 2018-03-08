@@ -2,12 +2,14 @@
 - name: create directory
   file:
     path: "{{ kafka_home }}"
+    mode: "0777"
     state: directory
 
 - name: Download the latest version and unarchive it.
   unarchive:
     src: "{{ kafka_download_url }}"
     dest: "{{ kafka_home }}"
+    mode: "0777"
     remote_src: yes
     
 - name: find kafka
@@ -32,4 +34,19 @@
   file:
     src: "{{ kafka_home }}/{{ kafka_version }}"
     dest: "{{ kafka_home }}/default"
+    mode: "0777"    
     state: link
+    
+- name: create a script for starting zookeeper-server 
+  template:
+    src: zookeeper-server-startup.sh.j2
+    dest: "{{ kafka_home }}/default/zookeeper-server-startup.sh"
+    backup: yes
+    mode: 0777
+    
+- name: create a script for starting kafka-server 
+  template:
+    src: kafka-server-startup.sh.j2
+    dest: "{{ kafka_home }}/default/kafka-server-startup.sh"
+    backup: yes
+    mode: 0777  

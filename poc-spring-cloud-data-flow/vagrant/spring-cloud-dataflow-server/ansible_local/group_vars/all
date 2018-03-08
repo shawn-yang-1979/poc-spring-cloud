@@ -1,2 +1,4 @@
 ---
-spring_cloud_dataflow_server_home: "/solution/spring-cloud-dataflow-server"
+spring_cloud_dataflow_home: "/solution/spring-cloud-dataflow"
+postgres_password: postgres123
+kafka_home: /solution/kafka
