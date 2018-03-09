@@ -1,0 +1,5 @@
+---
+- name: make sure pip is installed
+  apt: name={{item}} state=present force=yes
+  with_items:    
+    - python-pip

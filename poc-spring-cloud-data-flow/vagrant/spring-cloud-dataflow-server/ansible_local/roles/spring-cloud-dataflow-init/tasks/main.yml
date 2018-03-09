@@ -8,6 +8,8 @@
   uri:
     url: http://localhost:9393/apps
     method: POST
+    user: "{{ spring_cloud_dataflow_username }}"
+    password: "{{ spring_cloud_dataflow_password }}"
     body: "uri={{ spring_cloud_dataflow_stream_app_starter_uri }}&force=true"
     status_code: 201
     
@@ -15,5 +17,7 @@
   uri:
     url: http://localhost:9393/apps
     method: POST
+    user: "{{ spring_cloud_dataflow_username }}"
+    password: "{{ spring_cloud_dataflow_password }}"    
     body: "uri={{ spring_cloud_dataflow_task_app_starter_uri }}&force=true"
     status_code: 201

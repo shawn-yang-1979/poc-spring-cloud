@@ -1,0 +1,18 @@
+---
+- name: create a directory if it doesn't exist
+  file:
+    path: /solution/redis-docker/data
+    state: directory
+    owner: 200
+    recurse: yes
+    
+- name: Create a redis container
+  docker_container:
+    name: "{{ redis_docker_container_name }}"
+    image: redis
+    command: redis-server --appendonly yes
+    state: started
+    restart_policy: unless-stopped
+    published_ports: 6379:6379
+    volumes:
+      - /solution/redis-docker/data:/data

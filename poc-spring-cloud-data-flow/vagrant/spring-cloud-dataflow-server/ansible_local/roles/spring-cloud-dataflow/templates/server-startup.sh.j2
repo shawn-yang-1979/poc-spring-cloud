@@ -1,9 +1,14 @@
 cd `dirname $0`;
 java -jar {{ server_jar_name }} \
 --logging.path=log \
+--logging.file.max-history=10 \
 --maven.localRepository=maven-local-repository \
---spring.cloud.deployer.local.workingDirectoriesRoot={{ spring_cloud_dataflow_working_directory }}
+--spring.cloud.deployer.local.workingDirectoriesRoot={{ spring_cloud_dataflow_working_directory }} \
 --spring.datasource.url=jdbc:postgresql:postgres \
 --spring.datasource.username=postgres \
 --spring.datasource.password={{ postgres_password }} \
---spring.datasource.driver-class-name=org.postgresql.Driver
+--spring.datasource.driver-class-name=org.postgresql.Driver \
+--security.basic.enabled=true \
+--security.user.name={{ spring_cloud_dataflow_username }} \
+--security.user.password={{ spring_cloud_dataflow_password }} \
+--security.user.role=VIEW,CREATE,MANAGE
